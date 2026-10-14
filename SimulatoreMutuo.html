@@ -6,8 +6,8 @@
     <title>Simulatore Mutuo</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Fissato alla versione 4.4.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
 
@@ -39,24 +39,24 @@
                 <div>
                     <label for="salary13Input" class="text-xs text-slate-300 block mb-1">13ª Netta (Opzionale)</label>
                     <div class="flex items-center gap-1">
-                        <input type="number" id="salary13Input" value="0" min="0" max="10000" step="50"
-                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
+                        <input type="number" id="salary13Input" value="" placeholder="-" min="0" max="10000" step="50"
+                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500">
                         <span class="text-slate-400 text-xs">€</span>
                     </div>
                 </div>
                 <div>
                     <label for="salary14Input" class="text-xs text-slate-300 block mb-1">14ª Netta (Opzionale)</label>
                     <div class="flex items-center gap-1">
-                        <input type="number" id="salary14Input" value="0" min="0" max="10000" step="50"
-                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
+                        <input type="number" id="salary14Input" value="" placeholder="-" min="0" max="10000" step="50"
+                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500">
                         <span class="text-slate-400 text-xs">€</span>
                     </div>
                 </div>
                 <div>
                     <label for="salary15Input" class="text-xs text-slate-300 block mb-1">15ª Netta (Opzionale)</label>
                     <div class="flex items-center gap-1">
-                        <input type="number" id="salary15Input" value="0" min="0" max="10000" step="50"
-                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
+                        <input type="number" id="salary15Input" value="" placeholder="-" min="0" max="10000" step="50"
+                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500">
                         <span class="text-slate-400 text-xs">€</span>
                     </div>
                 </div>
@@ -77,8 +77,8 @@
                 <div>
                     <label for="otherLoansInput" class="text-xs text-slate-300 block mb-1">Altre Rate in Corso (/Mese)</label>
                     <div class="flex items-center gap-1">
-                        <input type="number" id="otherLoansInput" value="0" min="0" max="2000" step="50"
-                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1.5 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
+                        <input type="number" id="otherLoansInput" value="" placeholder="-" min="0" max="2000" step="50"
+                               class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1.5 text-right text-sky-400 font-bold text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500">
                         <span class="text-slate-400 text-xs font-semibold">€/m</span>
                     </div>
                 </div>
@@ -89,9 +89,12 @@
                     <span class="text-xs text-slate-400 block">Rata Massima Sostenibile: <strong id="maxAffordablePayment" class="text-emerald-400">594 €/m</strong></span>
                     <span class="text-xs text-slate-400 block mt-0.5">Mutuo Massimo Ottenibile: <strong id="maxAffordablePrincipal" class="text-sky-400">128.350 €</strong></span>
                 </div>
-                <button type="button" id="applyMaxPrincipalBtn" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition shadow">
-                    Usa questo importo nel simulatore
-                </button>
+                <div class="flex flex-col items-center sm:items-end gap-1">
+                    <button type="button" id="applyMaxPrincipalBtn" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition shadow">
+                        Usa questo importo nel simulatore
+                    </button>
+                    <span id="maxPrincipalWarning" class="text-[10px] text-amber-400 hidden"></span>
+                </div>
             </div>
         </div>
 
@@ -120,11 +123,18 @@
                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500">
                     </div>
 
-                    <!-- Tasso TAN -->
+                    <!-- Tasso TAN con Input Testuale e TAEG Accanto -->
                     <div class="space-y-1">
-                        <div class="flex justify-between text-sm font-medium">
+                        <div class="flex justify-between items-center text-sm font-medium">
                             <label for="interestRate" class="text-slate-300">Tasso TAN (%)</label>
-                            <span id="interestRateVal" class="text-sky-400 font-bold">3,75%</span>
+                            <div class="flex items-center gap-3">
+                                <span id="inlineTaegDisplay" class="text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">TAEG: --</span>
+                                <div class="flex items-center gap-1">
+                                    <input type="number" id="interestRateText" value="3.75" min="0" max="15" step="0.01"
+                                           class="w-20 bg-slate-900 border border-slate-600 rounded px-2 py-0.5 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
+                                    <span class="text-sky-400 text-xs font-bold">%</span>
+                                </div>
+                            </div>
                         </div>
                         <input type="range" id="interestRate" min="0.5" max="8.0" step="0.05" value="3.75"
                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500">
@@ -154,8 +164,8 @@
                             <div>
                                 <label for="collectionFee" class="text-xs text-slate-300 block mb-1">Incasso Rata/Mese</label>
                                 <div class="flex items-center gap-1">
-                                    <input type="number" id="collectionFee" value="0.00" min="0" max="20" step="0.50"
-                                           class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
+                                    <input type="number" id="collectionFee" value="" placeholder="-" min="0" max="20" step="0.50"
+                                           class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500">
                                     <span class="text-slate-400 text-xs">€</span>
                                 </div>
                             </div>
@@ -179,7 +189,7 @@
                             </div>
                         </div>
 
-                        <!-- Nuove Spese: Rogito, Notaio, Agenzia e Tasse Compravendita -->
+                        <!-- Spese: Rogito, Notaio, Agenzia e Tasse Compravendita -->
                         <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-700/60">
                             <div>
                                 <label for="propertyPriceInput" class="text-xs text-slate-300 block mb-1">Prezzo Immobile (Rogito)</label>
@@ -201,7 +211,10 @@
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label for="agencyFeeInput" class="text-xs text-slate-300 block mb-1">Agenzia Immobiliare (+IVA)</label>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label for="agencyFeeInput" class="text-xs text-slate-300">Agenzia (Imponibile)</label>
+                                    <span id="agencyTotalDisplay" class="text-[10px] text-amber-400 font-semibold">Incl. IVA: 6.588 €</span>
+                                </div>
                                 <div class="flex items-center gap-1">
                                     <input type="number" id="agencyFeeInput" value="5400" min="0" max="50000" step="100"
                                            class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-sky-400 font-bold text-xs focus:outline-none focus:border-sky-500">
@@ -215,6 +228,21 @@
                                            class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-right text-amber-400 font-bold text-xs focus:outline-none focus:border-sky-500">
                                     <span class="text-slate-400 text-xs">€</span>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Info LTV e Liquidità Necessaria -->
+                        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 space-y-1 text-xs">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-400">Rapporto LTV (Mutuo/Prezzo):</span>
+                                <span id="ltvDisplay" class="font-bold text-sky-400">83.3%</span>
+                            </div>
+                            <div id="ltvWarning" class="text-amber-400 text-[11px] hidden">
+                                ⚠️ LTV > 80%: la banca potrebbe richiedere garanzie aggiuntive o polizze specifiche.
+                            </div>
+                            <div class="flex justify-between items-center pt-1 border-t border-slate-800">
+                                <span class="text-slate-300 font-medium">Liquidità Necessaria (Costi + Differenza):</span>
+                                <span id="liquidityNeededDisplay" class="font-bold text-emerald-400">0 €</span>
                             </div>
                         </div>
                     </div>
@@ -239,8 +267,8 @@
                         <div class="flex justify-between items-center text-sm font-medium">
                             <label for="bonus13Amount" class="text-slate-300">Importo 13ª Netta</label>
                             <div class="flex items-center gap-1">
-                                <input type="number" id="bonus13Amount" placeholder="0" min="0" max="10000" step="50"
-                                       class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-right text-emerald-400 font-bold text-sm focus:outline-none focus:border-emerald-500">
+                                <input type="number" id="bonus13Amount" value="" placeholder="-" min="0" max="10000" step="50"
+                                       class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-right text-emerald-400 font-bold text-sm placeholder:text-slate-500 focus:outline-none focus:border-emerald-500">
                                 <span class="text-slate-400 text-sm">€</span>
                             </div>
                         </div>
@@ -259,8 +287,8 @@
                         <div class="flex justify-between items-center text-sm font-medium">
                             <label for="bonus14Amount" class="text-slate-300">Importo 14ª Netta</label>
                             <div class="flex items-center gap-1">
-                                <input type="number" id="bonus14Amount" placeholder="0" min="0" max="10000" step="50"
-                                       class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-right text-emerald-400 font-bold text-sm focus:outline-none focus:border-emerald-500">
+                                <input type="number" id="bonus14Amount" value="" placeholder="-" min="0" max="10000" step="50"
+                                       class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-right text-emerald-400 font-bold text-sm placeholder:text-slate-500 focus:outline-none focus:border-emerald-500">
                                 <span class="text-slate-400 text-sm">€</span>
                             </div>
                         </div>
@@ -279,8 +307,8 @@
                         <div class="flex justify-between items-center text-sm font-medium">
                             <label for="bonus15Amount" class="text-slate-300">Importo 15ª Netta</label>
                             <div class="flex items-center gap-1">
-                                <input type="number" id="bonus15Amount" placeholder="0" min="0" max="10000" step="50"
-                                       class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-right text-emerald-400 font-bold text-sm focus:outline-none focus:border-emerald-500">
+                                <input type="number" id="bonus15Amount" value="" placeholder="-" min="0" max="10000" step="50"
+                                       class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-right text-emerald-400 font-bold text-sm placeholder:text-slate-500 focus:outline-none focus:border-emerald-500">
                                 <span class="text-slate-400 text-sm">€</span>
                             </div>
                         </div>
@@ -349,19 +377,22 @@
         </div>
 
         <!-- Area Grafico -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col justify-between space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 md:p-5 flex flex-col justify-between space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700 pb-3 gap-2">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-200">Proiezione Debito Residuo</h2>
-                    <span id="taegBadge" class="text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">TAEG Calcolato: --</span>
+                    <h2 class="text-lg font-semibold text-slate-200">Proiezione Debito Residuo e Interessi</h2>
+                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                        <span id="chartTanBadge" class="text-xs font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded border border-sky-400/25">TAN: --</span>
+                        <span id="taegBadge" class="text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/25">TAEG: --</span>
+                    </div>
                 </div>
-                <div class="text-right">
-                    <span class="text-xs text-slate-400">Rata Mensile Iniziale:</span>
+                <div class="text-left sm:text-right">
+                    <span class="text-xs text-slate-400">Rata Mensile Iniziale (incl. incasso):</span>
                     <span id="calcBasePayment" class="text-sm font-bold text-sky-400 block">-- € / mese</span>
                 </div>
             </div>
 
-            <div class="relative w-full h-80 md:h-96">
+            <div class="relative w-full h-72 sm:h-80 md:h-96">
                 <canvas id="mortgageChart"></canvas>
             </div>
         </div>
@@ -426,10 +457,15 @@
         }
 
         let currentYearlyMonthlyPayments = [];
+        let currentYearlyRemainingInterests = [];
+        let standardYearlyRemainingInterests = [];
+        let currentYearlyLumpSums = [];
+        let computedMaxPrincipal = 150000;
 
         // DOM Controlli Mutuo e Spese
         const mortgageAmountInput = document.getElementById('mortgageAmount');
         const interestRateInput = document.getElementById('interestRate');
+        const interestRateTextInput = document.getElementById('interestRateText');
         const mortgageYearsInput = document.getElementById('mortgageYears');
         const upfrontFeesInput = document.getElementById('upfrontFees');
         const collectionFeeInput = document.getElementById('collectionFee');
@@ -449,12 +485,18 @@
         const maxAffordablePaymentEl = document.getElementById('maxAffordablePayment');
         const maxAffordablePrincipalEl = document.getElementById('maxAffordablePrincipal');
         const applyMaxPrincipalBtn = document.getElementById('applyMaxPrincipalBtn');
+        const maxPrincipalWarning = document.getElementById('maxPrincipalWarning');
 
         const mortgageAmountVal = document.getElementById('mortgageAmountVal');
-        const interestRateVal = document.getElementById('interestRateVal');
         const mortgageYearsVal = document.getElementById('mortgageYearsVal');
         const taxAmountVal = document.getElementById('taxAmountVal');
         const taegBadge = document.getElementById('taegBadge');
+        const chartTanBadge = document.getElementById('chartTanBadge');
+        const inlineTaegDisplay = document.getElementById('inlineTaegDisplay');
+        const agencyTotalDisplay = document.getElementById('agencyTotalDisplay');
+        const ltvDisplay = document.getElementById('ltvDisplay');
+        const ltvWarning = document.getElementById('ltvWarning');
+        const liquidityNeededDisplay = document.getElementById('liquidityNeededDisplay');
 
         // DOM 13esima, 14esima e 15esima (Controlli Sinistra)
         const bonus13AmountInput = document.getElementById('bonus13Amount');
@@ -491,7 +533,7 @@
             updateSimulation();
         }
 
-        // Configurazione Chart.js
+        // Configurazione Chart.js con 4 dataset
         const ctx = document.getElementById('mortgageChart').getContext('2d');
 
         const mortgageChart = new Chart(ctx, {
@@ -507,18 +549,42 @@
                         pointRadius: 2,
                         pointHoverRadius: 6,
                         pointBackgroundColor: '#64748b',
-                        fill: false
+                        fill: false,
+                        spanGaps: false
                     },
                     {
                         label: 'Piano Con Versamenti Extra',
                         data: [],
                         borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
                         borderWidth: 3,
                         pointRadius: 3,
                         pointHoverRadius: 7,
                         pointBackgroundColor: '#10b981',
-                        fill: true
+                        fill: true,
+                        spanGaps: false
+                    },
+                    {
+                        label: 'Interessi Residui Standard',
+                        data: [],
+                        borderColor: '#94a3b8',
+                        borderWidth: 1.5,
+                        borderDash: [4, 4],
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        fill: false,
+                        spanGaps: false
+                    },
+                    {
+                        label: 'Interessi Residui Extra',
+                        data: [],
+                        borderColor: '#34d399',
+                        borderWidth: 1.5,
+                        borderDash: [4, 4],
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        fill: false,
+                        spanGaps: false
                     }
                 ]
             },
@@ -530,45 +596,67 @@
                     intersect: false
                 },
                 plugins: {
-                    legend: { labels: { color: '#cbd5e1', font: { size: 12, weight: '500' } } },
+                    legend: { 
+                        labels: { 
+                            color: '#cbd5e1', 
+                            font: { size: 11, weight: '500' },
+                            boxWidth: 12
+                        } 
+                    },
                     tooltip: {
                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
                         titleColor: '#38bdf8',
-                        titleFont: { size: 14, weight: 'bold' },
+                        titleFont: { size: 13, weight: 'bold' },
                         bodyColor: '#f1f5f9',
-                        bodyFont: { size: 12 },
+                        bodyFont: { size: 11 },
                         borderColor: '#334155',
                         borderWidth: 1,
-                        padding: 12,
+                        padding: 10,
                         displayColors: true,
                         callbacks: {
                             label: function(context) {
+                                if (context.raw === null || context.raw === undefined) return null;
                                 const val = Math.round(context.raw).toLocaleString('it-IT');
-                                let label = `${context.dataset.label}: ${val} € (Debito Residuo)`;
+                                const yearIdx = context.dataIndex;
+                                const collectionFeeVal = parseFloat(collectionFeeInput.value) || 0;
                                 
-                                if (context.datasetIndex === 1 && currentYearlyMonthlyPayments.length > 0) {
-                                    const yearIdx = context.dataIndex;
-                                    const yearPayment = currentYearlyMonthlyPayments[yearIdx];
-                                    if (yearPayment !== undefined) {
-                                        label += ` | Rata: ${yearPayment.toFixed(2).replace('.', ',')} €/m`;
+                                if (context.datasetIndex === 0) {
+                                    return `Piano Standard (Debito): ${val} €`;
+                                } else if (context.datasetIndex === 1) {
+                                    let label = `Piano Extra (Debito): ${val} €`;
+                                    if (currentYearlyMonthlyPayments.length > 0 && currentYearlyMonthlyPayments[yearIdx] !== undefined) {
+                                        const baseP = currentYearlyMonthlyPayments[yearIdx];
+                                        const totalPWithColl = baseP + collectionFeeVal;
+                                        label += ` | Rata: ${totalPWithColl.toFixed(2).replace('.', ',')} €/m`;
                                     }
+                                    const extraYearsValNum = parseInt(extraYearsInput.value) || 0;
+                                    if (yearIdx >= 1 && yearIdx <= extraYearsValNum && currentYearlyLumpSums && currentYearlyLumpSums[yearIdx] > 0) {
+                                        const lVal = Math.round(currentYearlyLumpSums[yearIdx]).toLocaleString('it-IT');
+                                        label += ` | Una tantum: ${lVal} €`;
+                                    }
+                                    return label;
+                                } else if (context.datasetIndex === 2) {
+                                    return `Interessi Residui Standard: ${val} €`;
+                                } else if (context.datasetIndex === 3) {
+                                    return `Interessi Residui Extra: ${val} €`;
                                 }
-                                return label;
+                                return null;
                             }
                         }
                     }
                 },
                 scales: {
                     x: { 
-                        ticks: { color: '#94a3b8' }, 
-                        grid: { color: 'rgba(51, 65, 85, 0.5)' } 
+                        ticks: { color: '#94a3b8', font: { size: 10 } }, 
+                        grid: { color: 'rgba(51, 65, 85, 0.4)' } 
                     },
                     y: { 
                         ticks: { 
                             color: '#94a3b8',
-                            callback: value => value.toLocaleString('it-IT') + ' €' 
+                            font: { size: 10 },
+                            callback: value => value >= 1000 ? (value / 1000).toLocaleString('it-IT') + ' k€' : value + ' €'
                         }, 
-                        grid: { color: 'rgba(51, 65, 85, 0.5)' } 
+                        grid: { color: 'rgba(51, 65, 85, 0.4)' } 
                     }
                 }
             }
@@ -616,94 +704,232 @@
             const monthlyRate = annualRate / 12;
             let totalInterest = 0;
 
+            const yearlyBalances = [balance];
+            const cumulativeInterestPaid = [0];
+            let currentCumInterest = 0;
+
             for (let year = 1; year <= years; year++) {
                 for (let month = 1; month <= 12; month++) {
                     if (balance > 0) {
                         let interest = balance * monthlyRate;
                         totalInterest += interest;
+                        currentCumInterest += interest;
                         let principalPaid = monthlyPayment - interest;
                         balance = Math.max(0, balance - principalPaid);
                     }
                 }
+                yearlyBalances.push(balance);
+                cumulativeInterestPaid.push(currentCumInterest);
                 data.push(balance);
             }
-            return { data, totalInterest };
+
+            const remainingInterests = [];
+            for (let y = 0; y <= years; y++) {
+                remainingInterests.push(totalInterest - cumulativeInterestPaid[y]);
+            }
+
+            return { data, totalInterest, yearlyRemainingInterests: remainingInterests };
         }
 
-        function calculateReduceYears(principal, annualRate, years, baseMonthlyPayment, monthlyExtra, annualBonusExtra, extraYears) {
-            let balance = principal;
-            const data = [balance];
+        function getRemainingInterestForward(startBalance, startPayment, startMonthIndex, totalMonths, annualRate) {
+            let b = startBalance;
+            let p = startPayment;
+            let remInterest = 0;
+            let mIdx = startMonthIndex;
             const monthlyRate = annualRate / 12;
-            let totalInterestPaid = 0;
-            let payoffYear = years;
-            const yearlyMonthlyPayments = [baseMonthlyPayment];
 
-            for (let year = 1; year <= years; year++) {
-                let applyExtra = year <= extraYears;
-                let annualExtraMonthly = applyExtra ? (monthlyExtra + annualBonusExtra / 12) : 0;
-                let currentPayment = baseMonthlyPayment + annualExtraMonthly;
+            while (b > 0 && mIdx < totalMonths) {
+                let interest = b * monthlyRate;
+                remInterest += interest;
+                let principalPaid = p - interest;
+                b = Math.max(0, b - principalPaid);
+                mIdx++;
+            }
+            return remInterest;
+        }
 
-                for (let month = 1; month <= 12; month++) {
-                    if (balance > 0) {
-                        let interest = balance * monthlyRate;
-                        totalInterestPaid += interest;
-                        let principalPaid = currentPayment - interest;
-                        balance = Math.max(0, balance - principalPaid);
-                        if (balance === 0 && payoffYear === years) {
-                            payoffYear = year;
-                        }
+        function getRemainingInterestReducePaymentForward(startBalance, startPayment, startYear, startMonthIndex, totalMonths, annualRate, extraYears, baseMonthlyExtra, baseBonus) {
+            let b = startBalance;
+            let p = startPayment;
+            let remInterest = 0;
+            let mIdx = startMonthIndex;
+            let simYear = startYear;
+            const monthlyRate = annualRate / 12;
+
+            while (b > 0 && mIdx < totalMonths) {
+                let monthInYear = (mIdx % 12) + 1;
+                let interest = b * monthlyRate;
+                remInterest += interest;
+                let remainingMonths = totalMonths - mIdx;
+                let principalPaid = p - interest;
+                b = Math.max(0, b - principalPaid);
+                mIdx++;
+
+                if (monthInYear === 12 && b > 0 && simYear <= extraYears) {
+                    let lump = (baseMonthlyExtra * 12) + baseBonus;
+                    lump = Math.min(lump, b);
+                    b = Math.max(0, b - lump);
+                    if (b > 0 && remainingMonths > 0) {
+                        p = calculateMonthlyPayment(b, annualRate, (totalMonths - mIdx) / 12);
                     }
                 }
-                data.push(balance);
-                yearlyMonthlyPayments.push(baseMonthlyPayment);
+                if (monthInYear === 12) {
+                    simYear++;
+                }
             }
-
-            return { data, totalInterestPaid, payoffYear, finalMonthlyPayment: baseMonthlyPayment, yearlyMonthlyPayments };
+            return remInterest;
         }
 
-        function calculateReducePayment(principal, annualRate, years, monthlyExtra, annualBonusExtra, extraYears) {
+        function calculateReduceYears(principal, annualRate, years, baseMonthlyPayment, monthlyExtra, annualBonusExtra, extraYears, baseTotalInterest) {
             let balance = principal;
-            const data = [balance];
             const monthlyRate = annualRate / 12;
             const totalMonths = years * 12;
             let totalInterestPaid = 0;
-            let currentMonthlyPayment = calculateMonthlyPayment(principal, annualRate, years);
-            const yearlyMonthlyPayments = [currentMonthlyPayment];
+            let totalPayoffMonths = totalMonths;
+            let payoffReached = false;
+
+            const data = [balance];
+            const yearlyMonthlyPayments = [baseMonthlyPayment];
+            const yearlyRemainingInterests = [baseTotalInterest];
+            const yearlyLumpSums = [0];
+
+            let currentBalance = principal;
+            let currentPayment = baseMonthlyPayment;
 
             for (let year = 1; year <= years; year++) {
-                let applyExtra = year <= extraYears;
-                let annualBonusLumpSum = applyExtra ? annualBonusExtra : 0;
-                let monthlyExtraVal = applyExtra ? monthlyExtra : 0;
-
                 for (let month = 1; month <= 12; month++) {
-                    let currentMonthIndex = (year - 1) * 12 + month;
-                    let remainingMonths = totalMonths - currentMonthIndex + 1;
-
-                    if (balance > 0) {
-                        let interest = balance * monthlyRate;
+                    if (currentBalance > 0) {
+                        let interest = currentBalance * monthlyRate;
                         totalInterestPaid += interest;
-
-                        let principalPaid = (currentMonthlyPayment - interest) + monthlyExtraVal;
-                        
-                        if (month === 12) {
-                            principalPaid += annualBonusLumpSum;
-                        }
-
-                        balance = Math.max(0, balance - principalPaid);
-
-                        if (balance > 0 && remainingMonths > 1) {
-                            currentMonthlyPayment = calculateMonthlyPayment(balance, annualRate, remainingMonths / 12);
+                        let principalPaid = currentPayment - interest;
+                        currentBalance = Math.max(0, currentBalance - principalPaid);
+                        if (currentBalance === 0 && !payoffReached) {
+                            totalPayoffMonths = (year - 1) * 12 + month;
+                            payoffReached = true;
                         }
                     }
                 }
-                data.push(balance);
-                yearlyMonthlyPayments.push(currentMonthlyPayment);
+
+                let lumpSum = 0;
+                if (year <= extraYears && currentBalance > 0) {
+                    lumpSum = (monthlyExtra * 12) + annualBonusExtra;
+                    lumpSum = Math.min(lumpSum, currentBalance);
+                    currentBalance = Math.max(0, currentBalance - lumpSum);
+                    if (currentBalance === 0 && !payoffReached) {
+                        totalPayoffMonths = year * 12;
+                        payoffReached = true;
+                    }
+                }
+                yearlyLumpSums.push(lumpSum);
+
+                if (currentBalance === 0 && payoffReached && data[data.length - 1] === null) {
+                    data.push(null);
+                } else if (currentBalance === 0 && !payoffReached) {
+                    payoffReached = true;
+                    totalPayoffMonths = year * 12;
+                    data.push(0);
+                } else {
+                    data.push(currentBalance > 0 ? currentBalance : null);
+                }
+
+                yearlyMonthlyPayments.push(currentPayment);
+
+                let remInt = getRemainingInterestForward(currentBalance, currentPayment, year * 12, totalMonths, annualRate);
+                yearlyRemainingInterests.push(remInt);
             }
 
-            return { data, totalInterestPaid, payoffYear: years, finalMonthlyPayment: currentMonthlyPayment, yearlyMonthlyPayments };
+            if (!payoffReached) totalPayoffMonths = totalMonths;
+
+            return {
+                data,
+                totalInterestPaid,
+                totalPayoffMonths,
+                finalMonthlyPayment: baseMonthlyPayment,
+                yearlyMonthlyPayments,
+                yearlyRemainingInterests,
+                yearlyLumpSums
+            };
         }
 
-        let computedMaxPrincipal = 150000;
+        function calculateReducePayment(principal, annualRate, years, baseMonthlyPayment, monthlyExtra, annualBonusExtra, extraYears, baseTotalInterest) {
+            let balance = principal;
+            const monthlyRate = annualRate / 12;
+            const totalMonths = years * 12;
+            let totalInterestPaid = 0;
+            let totalPayoffMonths = totalMonths;
+            let payoffReached = false;
+            let currentMonthlyPayment = calculateMonthlyPayment(principal, annualRate, years);
+
+            const data = [principal];
+            const yearlyMonthlyPayments = [currentMonthlyPayment];
+            const yearlyRemainingInterests = [baseTotalInterest];
+            const yearlyLumpSums = [0];
+
+            let currentBalance = principal;
+            let currentPayment = currentMonthlyPayment;
+
+            for (let year = 1; year <= years; year++) {
+                for (let month = 1; month <= 12; month++) {
+                    let currentMonthIndex = (year - 1) * 12 + month;
+                    let remainingMonths = totalMonths - currentMonthIndex;
+
+                    if (currentBalance > 0) {
+                        let interest = currentBalance * monthlyRate;
+                        totalInterestPaid += interest;
+                        let principalPaid = currentPayment - interest;
+                        currentBalance = Math.max(0, currentBalance - principalPaid);
+                        if (currentBalance === 0 && !payoffReached) {
+                            totalPayoffMonths = currentMonthIndex;
+                            payoffReached = true;
+                        }
+                    }
+                }
+
+                let lumpSum = 0;
+                let remMonthsAfterYear = totalMonths - (year * 12);
+                if (year <= extraYears && currentBalance > 0) {
+                    lumpSum = (monthlyExtra * 12) + annualBonusExtra;
+                    lumpSum = Math.min(lumpSum, currentBalance);
+                    currentBalance = Math.max(0, currentBalance - lumpSum);
+                    if (currentBalance === 0 && !payoffReached) {
+                        totalPayoffMonths = year * 12;
+                        payoffReached = true;
+                    }
+                }
+                yearlyLumpSums.push(lumpSum);
+
+                if (currentBalance > 0 && remMonthsAfterYear > 0) {
+                    currentPayment = calculateMonthlyPayment(currentBalance, annualRate, remMonthsAfterYear / 12);
+                }
+
+                if (currentBalance === 0 && payoffReached && data[data.length - 1] === null) {
+                    data.push(null);
+                } else if (currentBalance === 0 && !payoffReached) {
+                    payoffReached = true;
+                    totalPayoffMonths = year * 12;
+                    data.push(0);
+                } else {
+                    data.push(currentBalance > 0 ? currentBalance : null);
+                }
+
+                yearlyMonthlyPayments.push(currentPayment);
+
+                let remInt = getRemainingInterestReducePaymentForward(currentBalance, currentPayment, year + 1, year * 12, totalMonths, annualRate, extraYears, monthlyExtra, annualBonusExtra);
+                yearlyRemainingInterests.push(remInt);
+            }
+
+            if (!payoffReached) totalPayoffMonths = totalMonths;
+
+            return {
+                data,
+                totalInterestPaid,
+                totalPayoffMonths,
+                finalMonthlyPayment: currentPayment,
+                yearlyMonthlyPayments,
+                yearlyRemainingInterests,
+                yearlyLumpSums
+            };
+        }
 
         function updateAffordability() {
             const netSalary = parseFloat(salaryInput.value) || 0;
@@ -716,20 +942,23 @@
 
             const ratio = parseFloat(contractTypeSelect.value) || 0.33;
             const otherLoans = parseFloat(otherLoansInput.value) || 0;
+            const collectionFee = parseFloat(collectionFeeInput.value) || 0;
 
             const maxPayment = Math.max(0, (equivalentMonthlyNet * ratio) - otherLoans);
+            const maxMortgagePayment = Math.max(0, maxPayment - collectionFee);
             maxAffordablePaymentEl.textContent = `${Math.round(maxPayment).toLocaleString('it-IT')} €/m`;
 
-            const annualRate = (parseFloat(interestRateInput.value) || 0) / 100;
+            const annualRate = (parseFloat(interestRateTextInput.value) || 0) / 100;
             const years = parseInt(mortgageYearsInput.value) || 30;
 
-            computedMaxPrincipal = calculateMaxPrincipal(maxPayment, annualRate, years);
+            computedMaxPrincipal = calculateMaxPrincipal(maxMortgagePayment, annualRate, years);
             maxAffordablePrincipalEl.textContent = `${Math.round(computedMaxPrincipal).toLocaleString('it-IT')} €`;
         }
 
         function updateSimulation() {
             const principal = parseFloat(mortgageAmountInput.value) || 0;
-            const annualRate = (parseFloat(interestRateInput.value) || 0) / 100;
+            const tanValNum = parseFloat(interestRateTextInput.value) || 0;
+            const annualRate = tanValNum / 100;
             const years = parseInt(mortgageYearsInput.value) || 30;
 
             updateAffordability();
@@ -740,12 +969,26 @@
             const taxRatePercent = parseFloat(taxRateInput.value) || 0;
             const impostaSostitutiva = principal * (taxRatePercent / 100);
             
-            // Nuove spese aggiuntive
             const notaryFee = parseFloat(notaryFeeInput.value) || 0;
-            const agencyFee = parseFloat(agencyFeeInput.value) || 0;
-            const purchaseTax = parseFloat(purchaseTaxInput.value) || 0;
+            const agencyFeeNet = parseFloat(agencyFeeInput.value) || 0;
+            const agencyFeeWithVat = agencyFeeNet * 1.22;
+            agencyTotalDisplay.textContent = `Incl. IVA: ${Math.round(agencyFeeWithVat).toLocaleString('it-IT')} €`;
 
-            const totalUpfrontFees = upfrontFeesInputVal + impostaSostitutiva + notaryFee + agencyFee + purchaseTax;
+            const purchaseTax = parseFloat(purchaseTaxInput.value) || 0;
+            const propertyPrice = parseFloat(propertyPriceInput.value) || 0;
+
+            const totalUpfrontFees = upfrontFeesInputVal + impostaSostitutiva + notaryFee + agencyFeeWithVat + purchaseTax;
+
+            const ltv = propertyPrice > 0 ? (principal / propertyPrice) * 100 : 0;
+            ltvDisplay.textContent = `${ltv.toFixed(1).replace('.', ',')}%`;
+            if (ltv > 80) {
+                ltvWarning.classList.remove('hidden');
+            } else {
+                ltvWarning.classList.add('hidden');
+            }
+
+            const liquidityNeeded = Math.max(0, propertyPrice - principal + totalUpfrontFees);
+            liquidityNeededDisplay.textContent = `${Math.round(liquidityNeeded).toLocaleString('it-IT')} €`;
 
             const strategy = document.querySelector('input[name="extraStrategy"]:checked').value;
 
@@ -761,7 +1004,7 @@
             const bonus15Pct = (parseFloat(bonus15PctInput.value) || 0) / 100;
             const bonus15Used = bonus15Amount * bonus15Pct;
 
-            const totalBonusUsed = bonus13Used + bonus14Used + bonus15Used;
+            const totalAnnualBonusUsed = bonus13Used + bonus14Used + bonus15Used;
 
             const monthlyExtra = parseFloat(monthlyExtraInput.value) || 0;
             let extraYears = parseInt(extraYearsInput.value) || 10;
@@ -773,7 +1016,6 @@
             extraYearsInput.max = years;
 
             mortgageAmountVal.textContent = `${principal.toLocaleString('it-IT')} €`;
-            interestRateVal.textContent = `${parseFloat(interestRateInput.value).toFixed(2).replace('.', ',')}%`;
             mortgageYearsVal.textContent = `${years} anni`;
             taxAmountVal.textContent = `${Math.round(impostaSostitutiva).toLocaleString('it-IT')} €`;
 
@@ -785,51 +1027,125 @@
             extraYearsVal.textContent = `${extraYears} anni`;
 
             const baseMonthlyPayment = calculateMonthlyPayment(principal, annualRate, years);
-            calcBasePayment.textContent = `${baseMonthlyPayment.toFixed(2).replace('.', ',')} € / mese`;
+            const totalInitialMonthlyPaymentWithCollection = baseMonthlyPayment + collectionFee;
+            calcBasePayment.textContent = `${totalInitialMonthlyPaymentWithCollection.toFixed(2).replace('.', ',')} € / mese`;
 
             const computedTAEG = calculateTAEG(principal, baseMonthlyPayment, upfrontFeesInputVal + impostaSostitutiva, collectionFee, years * 12);
-            taegBadge.textContent = `TAEG Calcolato: ${computedTAEG.toFixed(3).replace('.', ',')}%`;
+            
+            const taegFormatted = computedTAEG.toFixed(3).replace('.', ',') + '%';
+            taegBadge.textContent = `TAEG: ${taegFormatted}`;
+            inlineTaegDisplay.textContent = `TAEG: ${taegFormatted}`;
+            chartTanBadge.textContent = `TAN: ${tanValNum.toFixed(2).replace('.', ',')}%`;
 
-            const totalAnnualExtra = (monthlyExtra * 12) + totalBonusUsed;
+            const totalAnnualExtra = (monthlyExtra * 12) + totalAnnualBonusUsed;
             kpiAnnualExtra.textContent = `${Math.round(totalAnnualExtra).toLocaleString('it-IT')} €`;
             kpiUpfrontTotal.textContent = `${Math.round(totalUpfrontFees).toLocaleString('it-IT')} €`;
-            kpiUpfrontSubtext.textContent = `Banca + Notaio + Agenzia + Tasse`;
+            kpiUpfrontSubtext.textContent = `Banca + Notaio + Agenzia (IVA) + Tasse`;
 
-            const { data: baselineData, totalInterest: baseTotalInterest } = calculateBaseline(principal, annualRate, years, baseMonthlyPayment);
+            const { data: baselineData, totalInterest: baseTotalInterest, yearlyRemainingInterests: stdRemInt } = calculateBaseline(principal, annualRate, years, baseMonthlyPayment);
+            standardYearlyRemainingInterests = stdRemInt || [];
             
             let acceleratedResult;
             if (strategy === 'reduceYears') {
-                acceleratedResult = calculateReduceYears(principal, annualRate, years, baseMonthlyPayment, monthlyExtra, totalBonusUsed, extraYears);
+                acceleratedResult = calculateReduceYears(principal, annualRate, years, baseMonthlyPayment, monthlyExtra, totalAnnualBonusUsed, extraYears, baseTotalInterest);
+                
+                const totalMonths = acceleratedResult.totalPayoffMonths;
+                const resYears = Math.floor(totalMonths / 12);
+                const resMonths = totalMonths % 12;
                 
                 kpiDynamicLabel.textContent = "Nuova Durata Stimata";
-                kpiDynamicValue.textContent = `~${acceleratedResult.payoffYear} Anni`;
+                kpiDynamicValue.textContent = resMonths > 0 ? `${resYears} Anni e ${resMonths} Mesi` : `${resYears} Anni`;
                 kpiDynamicSubtext.textContent = `Invece dei ${years} anni previsti`;
             } else {
-                acceleratedResult = calculateReducePayment(principal, annualRate, years, monthlyExtra, totalBonusUsed, extraYears);
+                acceleratedResult = calculateReducePayment(principal, annualRate, years, baseMonthlyPayment, monthlyExtra, totalAnnualBonusUsed, extraYears, baseTotalInterest);
                 
                 kpiDynamicLabel.textContent = "Rata Finale Stimata";
-                kpiDynamicValue.textContent = `${acceleratedResult.finalMonthlyPayment.toFixed(2).replace('.', ',')} €`;
-                kpiDynamicSubtext.textContent = `Rispetto a ${baseMonthlyPayment.toFixed(2).replace('.', ',')} € iniziali`;
+                kpiDynamicValue.textContent = `${(acceleratedResult.finalMonthlyPayment + collectionFee).toFixed(2).replace('.', ',')} €`;
+                kpiDynamicSubtext.textContent = `Rispetto a ${totalInitialMonthlyPaymentWithCollection.toFixed(2).replace('.', ',')} € iniziali`;
             }
 
             currentYearlyMonthlyPayments = acceleratedResult.yearlyMonthlyPayments || [];
+            currentYearlyRemainingInterests = acceleratedResult.yearlyRemainingInterests || [];
+            currentYearlyLumpSums = acceleratedResult.yearlyLumpSums || [];
 
             const savedInterest = Math.max(0, Math.round(baseTotalInterest - acceleratedResult.totalInterestPaid));
             kpiSavedInterest.textContent = `~${savedInterest.toLocaleString('it-IT')} €`;
 
+            const extraDataProcessed = [];
+            const extraInterestProcessed = [];
+            const payoffYearIndex = Math.ceil(acceleratedResult.totalPayoffMonths / 12);
+            for (let i = 0; i <= years; i++) {
+                if (i <= payoffYearIndex) {
+                    extraDataProcessed.push(acceleratedResult.data[i]);
+                    extraInterestProcessed.push(acceleratedResult.yearlyRemainingInterests[i] !== undefined ? acceleratedResult.yearlyRemainingInterests[i] : null);
+                } else {
+                    extraDataProcessed.push(null);
+                    extraInterestProcessed.push(null);
+                }
+            }
+
             mortgageChart.data.labels = Array.from({length: years + 1}, (_, i) => `Anno ${i}`);
-            mortgageChart.data.datasets[0].label = `Piano Standard (${baseMonthlyPayment.toFixed(2).replace('.', ',')} €/m)`;
+            
+            mortgageChart.data.datasets[0].label = `Piano Standard (${totalInitialMonthlyPaymentWithCollection.toFixed(2).replace('.', ',')} €/m)`;
             mortgageChart.data.datasets[0].data = baselineData;
-            mortgageChart.data.datasets[1].data = acceleratedResult.data;
+            
+            const dataset1FinalRateDisplay = (acceleratedResult.finalMonthlyPayment + collectionFee).toFixed(2).replace('.', ',');
+            mortgageChart.data.datasets[1].label = `Piano Con Versamenti Extra (${dataset1FinalRateDisplay} €/m)`;
+            mortgageChart.data.datasets[1].data = extraDataProcessed;
+
+            mortgageChart.data.datasets[2].data = standardYearlyRemainingInterests;
+            mortgageChart.data.datasets[3].data = extraInterestProcessed;
+
             mortgageChart.update();
         }
 
-        applyMaxPrincipalBtn.addEventListener('click', () => {
-            const roundedMax = Math.round(computedMaxPrincipal / 5000) * 5000;
-            if (roundedMax > 0) {
-                mortgageAmountInput.value = Math.max(50000, Math.min(500000, roundedMax));
+        // Gestione pulizia automatica 0 -> vuoto (mostra placeholder trattino) sui campi numerici opzionali
+        const optionalNumberInputs = [
+            salary13Input, salary14Input, salary15Input, 
+            otherLoansInput, collectionFeeInput, 
+            bonus13AmountInput, bonus14AmountInput, bonus15AmountInput
+        ];
+
+        optionalNumberInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                if (parseFloat(this.value) === 0) {
+                    this.value = '';
+                }
+            });
+            input.addEventListener('blur', function() {
+                if (this.value === '' || parseFloat(this.value) === 0) {
+                    this.value = '';
+                }
+            });
+        });
+
+        // Sincronizzazione Slider TAN <-> Input di testo TAN
+        interestRateInput.addEventListener('input', (e) => {
+            interestRateTextInput.value = e.target.value;
+            updateSimulation();
+        });
+
+        interestRateTextInput.addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+                if (val >= parseFloat(interestRateInput.min) && val <= parseFloat(interestRateInput.max)) {
+                    interestRateInput.value = val;
+                }
                 updateSimulation();
             }
+        });
+
+        applyMaxPrincipalBtn.addEventListener('click', () => {
+            const roundedMax = Math.floor(computedMaxPrincipal / 5000) * 5000;
+            if (roundedMax < 50000) {
+                mortgageAmountInput.value = 50000;
+                maxPrincipalWarning.textContent = "Il massimo sostenibile è inferiore al minimo del simulatore";
+                maxPrincipalWarning.classList.remove('hidden');
+            } else {
+                mortgageAmountInput.value = Math.min(500000, roundedMax);
+                maxPrincipalWarning.classList.add('hidden');
+            }
+            updateSimulation();
         });
 
         salary13Input.addEventListener('input', (e) => {
@@ -858,7 +1174,7 @@
             updateSimulation();
         });
 
-        [mortgageAmountInput, interestRateInput, mortgageYearsInput,
+        [mortgageAmountInput, mortgageYearsInput,
          bonus13PctInput, bonus14PctInput, bonus15PctInput, monthlyExtraInput, extraYearsInput].forEach(element => {
             element.addEventListener('input', updateSimulation);
         });
